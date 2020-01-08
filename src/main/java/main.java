@@ -106,8 +106,12 @@ public class main {
     private  static LinkedList<String> alterExcel(File file) throws IOException, InvalidFormatException, EmailColumnNotFoundException {
 
 
+        FileInputStream inputStream = new FileInputStream(file);
+        Workbook workbook = WorkbookFactory.create(inputStream);
+        //Workbook workbook = WorkbookFactory.create(file);
+
         LinkedList<String> removedAddresses = new LinkedList<String>();
-        Workbook workbook = WorkbookFactory.create(file);
+
         Sheet sheet = workbook.getSheetAt(0);
         Row firstRow = sheet.getRow(0);
         int indexEmailColumn = -1;
@@ -156,10 +160,13 @@ public class main {
             }
 
         }
-        FileOutputStream out = new FileOutputStream(file.getAbsolutePath().replace(".xlsx","-robinsonChecked.xlsx"));
+        inputStream.close();
+        //FileOutputStream out = new FileOutputStream(file.getAbsolutePath().replace(".xlsx","-robinsonChecked.xlsx"));
+        FileOutputStream out = new FileOutputStream(file.getAbsolutePath());
 
         workbook.write(out);
         workbook.close();
+        out.close();
 
 
         JOptionPane.showMessageDialog(null,"The following recipients were removed from the Excel file (" + file.getAbsolutePath() + "):\n" + removedAddresses, "Checked with Robinson",JOptionPane.INFORMATION_MESSAGE);
