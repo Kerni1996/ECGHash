@@ -135,23 +135,34 @@ public class main {
             if (row!=null) {
                 String email = sheet.getRow(i).getCell(indexEmailColumn).getStringCellValue();
 
-                //convert email String to lower case
-                email = email.toLowerCase();
+                if (email!=null&&!email.equals("")) {
+                    //convert email String to lower case
+                    email = email.toLowerCase();
+                    //System.out.println("email: " + email);
 
-                //check also if domain is in ECg List
-                String domain = "@"+email.split("@")[1];
 
-                byte[] iso88591Mail = email.getBytes("ISO-8859-1");
-                byte[] iso88591Domain = domain.getBytes("ISO-8859-1");
+                    String domain = "";
+                    //check also if domain is in ECg List
+                    try {
+                        domain = "@" + email.split("@")[1];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("email: " + email);
+                        e.printStackTrace();
+                    }
 
-                //apply hash
-                String sha1Mail = toSHA1(iso88591Mail);
-                String sha1Domain = toSHA1(iso88591Domain);
 
-                if (ECGHash.contains(sha1Mail)||ECGHash.contains(sha1Domain)){
-                    sheet.removeRow(sheet.getRow(i));
-                    //sheet.getRow(i).createCell(indexEmailColumn+1).setCellValue(true);
-                    removedAddresses.add(email);
+                    byte[] iso88591Mail = email.getBytes("ISO-8859-1");
+                    byte[] iso88591Domain = domain.getBytes("ISO-8859-1");
+
+                    //apply hash
+                    String sha1Mail = toSHA1(iso88591Mail);
+                    String sha1Domain = toSHA1(iso88591Domain);
+
+                    if (ECGHash.contains(sha1Mail) || ECGHash.contains(sha1Domain)) {
+                        sheet.removeRow(sheet.getRow(i));
+                        //sheet.getRow(i).createCell(indexEmailColumn+1).setCellValue(true);
+                        removedAddresses.add(email);
+                    }
                 }
                 //else sheet.getRow(i).createCell(indexEmailColumn+1).setCellValue(false);
 
